@@ -1,0 +1,65 @@
+image: ruby:2.7.1
+
+services:
+  - redis:latest
+  - postgres:latest
+
+variables:
+  LC_ALL: C.UTF-8
+  LANG: en_US.UTF-8
+  LANGUAGE: en_US.UTF-8
+  RAILS_ENV: test
+  POSTGRES_DB: cabinet_test
+  POSTGRES_USER: runner
+  POSTGRES_PASSWORD: ""
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+# Cache gems in between builds
+cache:
+  paths:
+    - vendor/ruby
+    - node_modules
+
+# Cache gems in between builds
+.cache_bundler: &cache_bundler
+  cache:
+    paths:
+      - vendor/bundle
+
+.default-cache: &default-cache
+  cache:
+    untracked: true
+    key: 3931f0c04e455bec76be673d681ae1aef44eccb6cc968a84a6a843c5364d65d4cef2fce5eafc3a30ef9e18e0b6bbb0472ddf26cb289c6f8b8f7dc671a36cef8f
+    paths:
+      - node_modules/
+      - vendor/
+      - public/
+
+# This is a basic example for a gem or script which doesn't use
+# services such as redis or postgres
+before_script:
+  - bundle install
+
+stages:
+  - style
+  - test
+
+rubocop:
+  stage: style
+  script:
+    - bundle exec rubocop
+
+rspec:
+  <<: *default-cache
+  stage: test
+  script:
+    - cp config/database.gitlab config/database.yml
+    - RAILS_ENV=test bundle exec rake db:create db:schema:load
+    - bundle exec rspec spec/
+
+#deploy:
+#  type: deploy
+#  environment: production
+#  script:
+#    - gem install dpl
+#    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
