@@ -10,7 +10,7 @@ gem 'devise', '~> 4.7', '>= 4.7.2'
 gem 'haml', '~> 5.1', '>= 5.1.2'
 gem 'jbuilder', '~> 2.7'
 gem 'pg', '>= 0.18', '< 2.0'
-gem 'puma', '~> 4.1'
+gem 'puma', '~> 4.3'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.2'
 gem 'rubocop', '~> 0.87.1', require: false
 gem 'sass-rails', '>= 6'
